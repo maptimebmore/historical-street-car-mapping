@@ -7,15 +7,23 @@ Storing files and docs for the Historical Baltimore Street Car Mapping project
 
 ## Get your environment set up
 - Install QGIS
-- Install Postgres (optional)
+- Install Postgres (optional?)
+- Connect to remote Heroku PostGIS DB and add layer to
+- Enable Georeferencing plugin
+- Add in an OSM Tile layer
 
 ## Historical Mapping of streetcar maps
 - [link to street car data](https://jscholarship.library.jhu.edu/handle/1774.2/35300)
+- Bring in an image
+- (do georeferencing)
+- (save)
+- (edits are shown live in the browser)
 
+## Some next steps
 
+### Routing
+- Do routing
+- Add POIs and photos
 
-
-
-## Some next steps:
 ### Convert front-end to an Angular app
 - https://devcenter.heroku.com/articles/mean-apps-restful-api
