@@ -34,6 +34,9 @@ We will be using a free and open source mapping platform:
 - Temp leaflet, Node, Express App: https://github.com/jondandois/leaflet-express-tutorial
 - Deployed Leaflet, Node, Express app: https://secure-cliffs-69814.herokuapp.com/
 
+## Mapping Progress
+[See here for mapping progress](./MAPPING_PROGRESS.MD).
+
 ## Next steps
 
 ### Routing
