@@ -42,7 +42,7 @@ We will be using a free and open source mapping platform:
 - Deployed Leaflet, Node, Express app: https://secure-cliffs-69814.herokuapp.com/
 
 ## Mapping Progress
-[See here for mapping progress](./MAPPING_PROGRESS.MD).
+[See here for mapping progress](MAPPING_PROGRESS.md).
 
 ## Next steps
 
