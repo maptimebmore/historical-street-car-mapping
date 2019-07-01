@@ -11,12 +11,12 @@
 8.
 9.
 10.
-11.
-12.
-13.
-14.
-15.
-16.
+11. Complete
+12. Complete
+13. Complete
+14. Complete
+15. Complete
+16. Complete
 17. Complete
 18. Complete
 19. Complete
