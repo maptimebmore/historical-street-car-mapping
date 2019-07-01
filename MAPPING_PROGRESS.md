@@ -17,9 +17,9 @@
 14.
 15.
 16.
-17.
-18.
-19.
+17. Complete
+18. Complete
+19. Complete
 20. Complete
 21. Complete
 22. Complete
@@ -33,4 +33,4 @@
 30. Complete
 31. Complete
 32. Complete
-33.
+33. Complete
