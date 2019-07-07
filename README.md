@@ -1,6 +1,11 @@
 # MaptimeBmore Historical Streetcar Mapping project
 This README provides a guide for the MaptimeBmore Historical Streetcar Mapping project. The goal of the project is to digitize streetcar routes from the 1896 Bromley atlas of Baltimore City. The map sheets are obtained from the Johns Hopkins Sheridan Library system here: [Atlas of the City of Baltimore Maryland](https://jscholarship.library.jhu.edu/handle/1774.2/35300).
 
+## View the map here!
+https://secure-cliffs-69814.herokuapp.com/
+
+## Setup
+
 We will be using a free and open source mapping platform:
 
 - [QGIS3](https://qgis.org/en/site/) as a desktop GIS client
