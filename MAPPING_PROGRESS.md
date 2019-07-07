@@ -1,16 +1,16 @@
 # 1896 Bromley Atlas Streetcar digitizing progress
 
 ## Sheet Status
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
+1. Complete
+2. Complete
+3. Complete
+4. Complete
+5. Complete
+6. Complete
+7. Complete
+8. Complete
+9. Complete
+10. Complete
 11. Complete
 12. Complete
 13. Complete

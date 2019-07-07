@@ -46,6 +46,14 @@ We will be using a free and open source mapping platform:
 
 ## Next steps
 
+### Clean up / QC
+- Georeference the `Outline and Index` map sheet, create a new `atlas_index` polygon table, and digitize each sheet outline.
+- Visually compare the digitized street car lines with the individual sheets and make any adjustments, corrections, additions, deletions.
+
+### Validate Topology
+- ...
+
+
 ### Routing
 - Do routing
 - Add POIs and photos
