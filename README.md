@@ -51,12 +51,44 @@ We will be using a free and open source mapping platform:
 - Visually compare the digitized street car lines with the individual sheets and make any adjustments, corrections, additions, deletions.
 
 ### Validate Topology
-- ...
+- Topology refers to the relationships between shapes. By setting topology rules and applying topology validation, we can make sure that features on the streetcar network are correctly mapped.  For example, we need streetcar lines to touch and connect at each end.  Also, when two streetcar lines cross, we need to make sure there is a node or vertex at the intersection to help us with routing - this is because the routing tool will use these vertices to know when to make a turn or change tracks.
+- We are going to use the (Geometry Checker Plugin)[https://docs.qgis.org/3.4/en/docs/user_manual/plugins/plugins_geometry_checker.html] in QGIS to help build out the topology rules.
+- *Note:* The Geometry Checker plugin seems a bit buggy and causes QGIS to crash a lot.
+1. Go to Plugins > Manage and Install Plugins and enable the `Geometry Checker` plugin.
+2. Begin a Geometry Checker session: Vector > Check Geometries and Setup the geometry check for the `streetcars` layer.
+    1. Select `streetcars` as the only input vector layer.
+    2. Under `Geometry validity` check all available validators: `Self intersections`, `Duplicate nodes`, and `Self contacts`.
+    3. Under `Geometry properties` check `Lines must not have dangles`.
+    4. Under `Topology checks` check `Lines must not intersect any other lines`.
+3. Set the `Output vector layers` to `Create new layers` as a new GeoPackage (we want to manually edit our features and not have it done automatically).
+4. Click `Run` to create the validated geometry dataset.
+5. This will take a few minutes and will then show a `Results` tab showing all the errors that were found.
+6. Click `Export` and export the error report to a new GeoPackage `streetcars-errors`. We are going to manually update our `streetcars` table instead of using the interactive editor.
+
+### Correcting topology errors
+1. Load the `streetcars-errors` point layer into QGIS.
+2. Add a new string field to the `streetcar-errors` point layer called `resolution`, we are going to use this attribute table to track our edits.
+3. We are going to use 2 values go through the topology errors: `resolved` and `exception`. Setup a symbology for the errors point layer with 3 values for the field `resolution`: null or blank = `unresolved`, `resolved`, and `exception`. This will help us visually inspect each error.
+4. Open the attribute table of the errors layer, and set it to `Show Selected Features`, this will make it easier to edit each error.
+5. Navigate on the map to an error, it might help to start at one end of a streetcar route.
+6. There will be a `dangle` error at the trailing end of each route, mark these as an `exception` since they mark the end of the line in our dataset.
+7. When there are two dangles where the same streetcar line did not connect but should: select the streetcars layer, select one of the lines, select the `Vertex Tool`, move the vertex so that it snaps to the other vertex, then select both line features and click `Merge Selected Features` and pick the correct atributes to merge. Mark the dangles as `resolved`.
+8. It might not always make sense to merge to streetcar lines, even if the route is the same.  For example, if a route changes to a different street, it will be useful to keep it as two separate lines.
+
+
+
+
+
 
 
 ### Routing
-- Do routing
+- PG Routing
+- Assume
 - Add POIs and photos
+
+### Data improvements
+- Update with double tracking, and try to make assumptions about route direction.
+- Add better street / block designations to each segment.
 
 ### Convert front-end to an Angular app
 - https://devcenter.heroku.com/articles/mean-apps-restful-api
