@@ -1,0 +1,26 @@
+{
+  "name": "historical-street-car-mapping",
+  "version": "1.0.0",
+  "description": "basic historical street-car-mapping app tutorial",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maptimebmore/historical-street-car-mapping.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maptimebmore/historical-street-car-mapping/issues"
+  },
+  "homepage": "https://github.com/maptimebmore/historical-street-car-mapping#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
