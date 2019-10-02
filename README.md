@@ -2,7 +2,7 @@
 This README provides a guide for the MaptimeBmore Historical Streetcar Mapping project. The goal of the project is to digitize streetcar routes from the 1896 Bromley atlas of Baltimore City. The map sheets are obtained from the Johns Hopkins Sheridan Library system here: [Atlas of the City of Baltimore Maryland](https://jscholarship.library.jhu.edu/handle/1774.2/35300).
 
 ## View the map here!
-https://secure-cliffs-69814.herokuapp.com/
+https://maptimebmore.herokuapp.com/
 
 ## Setup
 
@@ -44,7 +44,7 @@ We will be using a free and open source mapping platform:
 
 ## Code
 - Repo for Leaflet, Node, Express App: https://github.com/jondandois/leaflet-express-tutorial
-- Deployed Leaflet, Node, Express app: https://secure-cliffs-69814.herokuapp.com/
+- Deployed Leaflet, Node, Express app: https://maptimebmore.herokuapp.com/
 
 ## Mapping Progress
 [See here for mapping progress](MAPPING_PROGRESS.md).
@@ -79,12 +79,6 @@ We will be using a free and open source mapping platform:
 6. There will be a `dangle` error at the trailing end of each route, mark these as an `exception` since they mark the end of the line in our dataset.
 7. When there are two dangles where the same streetcar line did not connect but should: select the streetcars layer, select one of the lines, select the `Vertex Tool`, move the vertex so that it snaps to the other vertex, then select both line features and click `Merge Selected Features` and pick the correct atributes to merge. Mark the dangles as `resolved`.
 8. It might not always make sense to merge to streetcar lines, even if the route is the same.  For example, if a route changes to a different street, it will be useful to keep it as two separate lines.
-
-
-
-
-
-
 
 ### Routing
 - PG Routing
