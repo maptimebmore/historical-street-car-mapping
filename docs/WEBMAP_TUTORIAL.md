@@ -25,6 +25,7 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. `git clone` the repo you created above to your local machine
 1. Add the `heroku` remote to your repo: `heroku git:remote -a <app-name>`
     - This will create a remote destination in your heroku app for your code to be deployed to. 
+1. Tell heroku we are using nodejs: `heroku buildpacks:set heroku/nodejs`
 1. Now we will create a generic `node` `express` app:
 1. Run `npm  init` and follow the defaults.
 1. Add `ExpressJS`: `npm install express --save`
