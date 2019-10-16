@@ -25,7 +25,6 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. `git clone` the repo you created above to your local machine
 1. Add the `heroku` remote to your repo: `heroku git:remote -a <app-name>`
     - This will create a remote destination in your heroku app for your code to be deployed to. 
-1. Tell heroku we are using nodejs: `heroku buildpacks:set heroku/nodejs`
 1. Now we will create a generic `node` `express` app:
 1. Run `npm  init` and follow the defaults.
 1. Add `ExpressJS`: `npm install express --save`
@@ -35,7 +34,7 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
     let express = require('express');
     let app = express();
     app.get('/', function (req, res) {
-        res.send('Hello World!');
+        res.send('Hello World! 👋🌎');
     });
 
     let port = process.env.PORT;
@@ -45,11 +44,13 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
     });
     ```
 
+1. Tell heroku we are using nodejs: `heroku buildpacks:set heroku/nodejs`
 1. Deploy your app:
     ```SH
     git add .
     git commit -am "getting started"
     git push heroku master
+    git push 
     ```
 1. Use `heroku open` to load up your app!
 1. That's all for `Step 0`. In `Step 1` we will set up the barebones [ExpressJS](https://expressjs.com/) application with routes.
