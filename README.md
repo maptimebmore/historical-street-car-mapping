@@ -4,6 +4,9 @@ This README provides a guide for the MaptimeBmore Historical Streetcar Mapping p
 ## View the map here!
 https://maptimebmore.herokuapp.com/
 
+## Tutorial for creating the Leaflet Web Map
+[Following along here on the steps needed for creating the web map](docs/WEBMAP_TUTORIAL.md)
+
 ## Setup
 
 We will be using a free and open source mapping platform:
@@ -47,7 +50,7 @@ We will be using a free and open source mapping platform:
 - Deployed Leaflet, Node, Express app: https://maptimebmore.herokuapp.com/
 
 ## Mapping Progress
-[See here for mapping progress](MAPPING_PROGRESS.md).
+[See here for mapping progress](docs/MAPPING_PROGRESS.md).
 
 ## Next steps
 
@@ -88,6 +91,3 @@ We will be using a free and open source mapping platform:
 ### Data improvements
 - Update with double tracking, and try to make assumptions about route direction.
 - Add better street / block designations to each segment.
-
-### Convert front-end to an Angular app
-- https://devcenter.heroku.com/articles/mean-apps-restful-api
