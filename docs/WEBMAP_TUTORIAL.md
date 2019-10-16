@@ -25,31 +25,33 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. `git clone` the repo you created above to your local machine
 1. Add the `heroku` remote to your repo: `heroku git:remote -a <app-name>`
     - This will create a remote destination in your heroku app for your code to be deployed to. 
-1. Create a basic Hello World index.html so that your heroku app has something to display.
-    - create a new file in the root of your app, `index.html`
-    - add in the following and save:
+1. Now we will create a generic `node` `express` app:
+1. Run `npm  init` and follow the defaults.
+1. Add `ExpressJS`: `npm install express --save`
+1. Create a new file `index.js` and add in this basic express `Hello World` app code:
+    ```JS
+    // <app-root>/index.js
+    let express = require('express');
+    let app = express();
+    app.get('/', function (req, res) {
+        res.send('Hello World!');
+    });
+
+    let port = process.env.PORT;
+    if (port == null || port == "") { port = 8000; }
+    app.listen(port, function () {
+        console.log(`Example app listening on port ${port}!`);
+    });
     ```
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>My Leaflet Map! 🌎</title>
-    </head>
-    <body>
-        <h1>Hello World! 👋</h1>
-    </body>
-    </html>
-    ```
+
 1. Deploy your app:
-    ```
+    ```SH
     git add .
     git commit -am "getting started"
     git push heroku master
     ```
 1. Use `heroku open` to load up your app!
-1. That's all for `Step 0`. In `Step 1` we will set up the barebones [ExpressJS](https://expressjs.com/) application 
+1. That's all for `Step 0`. In `Step 1` we will set up the barebones [ExpressJS](https://expressjs.com/) application with routes.
 
 ### DRAFT other steps
 
