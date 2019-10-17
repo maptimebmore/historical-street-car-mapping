@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    link(rel='favicon', sizes='64x64', href='favicon.ico')
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+
+  block head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    #main.container
+      #header
+        p To learn more about this project:
+        a(href="https://github.com/maptimebmore/historical-street-car-mapping") MaptimeBmore Historical Streetcar Mapping
+      block content
