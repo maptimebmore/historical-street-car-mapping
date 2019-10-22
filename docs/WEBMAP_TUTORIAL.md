@@ -1,11 +1,11 @@
 # Creating the WebApp
-Follow the steps below to create basic node application that serves up a Leaflet map and communicates with a Postgres database to show streetcar layers.
+Follow the steps below to create basic node application that serves up a Leaflet map and communicates with a Postgres database to show the streetcar layers we digitized.
 The tutorial is loosely based on [this tutorial from MDN](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) for getting the express app started. Then we will add some additional features for our Leaflet map and postgis routes. Each commit of the tutorial will be a specific step in the process.
 
 ## Tutorial Steps:
 - [Step 0: Get your environment set up](#step-0-get-your-environment-set-up)
 - [Step 1: Setting up the basic express app](#step-1-setting-up-the-basic-express-app)
-- [Step 2: Setting up the backend DB](#step-2-etting-up-the-backend-DB)
+- [Step 2: Setting up the backend DB](#step-2-setting-up-the-backend-DB)
 - [Step 3: Connecting the Express API to the DB](#step-3-connecting-the-Express-API-to-the-DB)
 - [Step 4: Styling the map](#step-4-styling-the-map)
 
@@ -21,9 +21,9 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will be using the program `Git Bash`.
 1. A code editor of your choice. I use [VS Code](https://code.visualstudio.com/), but anything is good.
 1. A SQL client, [PGAdmin](https://www.pgadmin.org/download/) is a good choice here.
-1. Install latest versions of [Node and npm](https://nodejs.org/en/) (they will come bunlded together)
-1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true#set-up) and `heroku login` at your command prompt (e.g, `git bash`) following the instructions.
-    - NOTE: I had some issues with doing this in `git bash`, others have reccomended using the Windows command prompt to perform `heroku login`, that worked for me too.
+1. Install latest versions of [Node and npm](https://nodejs.org/en/) (they will come bundled together)
+1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true#set-up) and `heroku login` at your command prompt following the instructions.
+    - NOTE: I had some issues with doing this in `git bash`, others have recommended using the Windows command prompt to perform `heroku login`, that worked for me too.
     - NOTE: Stop at the section `Prepare the app`, that is where we will insert our own app.
 
 #### Initialize the heroku app with your repo
@@ -64,13 +64,13 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 
 #### Getting the Express Generator boilerplate up and running
 1. Install [Express Generator](https://expressjs.com/en/starter/generator.html) `npm install -g express-generator`, we will use this to generate the skeleton app.
-1. Build the Express skeleton app using the `pug` view engine.  The second variable is your app name. `express --view=pug`, and follow instructions to install and run
+1. Build the Express skeleton app using the `pug` view engine. From your repo's root directory, run `express --view=pug`, and follow instructions to install Express.
     - This creates a new express boilerplate application using the [Pug Template Engine](https://pugjs.org/api/getting-started.html)
     - You will get a warning that there are already files present, that is okay, enter `Y` to continue
     - When you are done notice that this added several folders (`bin`, `public`, `routes`, `views`) and the new entry point `app.js`
 1. Run `npm start` to see what this new app can do. By default the app will be running at `http://localhost:3000`
-    - Check out this following this excellent ExpressJS tutorial from MDN for more on [Express and Pugthis](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
-    - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at `http://localhost:3000/users` and in `app.js`, and `routes/users.js` to see the basics of how another "route" or page are displayed.  We are going to use that format to create an `api` route to make database requests.
+    - Check out this ExpressJS tutorial from MDN for more on [Express and Pug](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
+    - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at `http://localhost:3000/users` and in `app.js`, and `routes/users.js` to see the basics of how another "route" or page is displayed.  We are going to use that format to create an `/api` route to make database requests.
 1. Stop the app by hitting `Ctrl + C` in your console, and let's do some more housekeeping
     - Remove `index.js`, it is replaced with `app.js`
     - In `app.js` remove all the lines that reference the `users` route (roughly Lines 8 and 23)
@@ -84,11 +84,11 @@ So far, most of our work has been in the console, using CLI (command line interf
         - `"devstart": "SET DEBUG=leaflet-express-tutorial:* & nodemon ./bin/www"`
     - Load and test app by running `npm run devstart`
     - Navigate to `http://localhost:3000`
-    - Change something in the code, for example the value for `title` in `routes/index.js`, then save. Notice in the terminal that nodemon restarts due to the changes.  Now, if you refresh your browser window, the changes are live!  Other build enviroments will allow you to do `hot-reloading`, which means that the developer tools will automatically restart your browser window for you when there is a file change, but this tutorial does not cover that. Modern front-end libraries that use `Webpack` have good configuration for those kinds of features.
+    - Change something in the code, for example the value for `title` in `routes/index.js`, then save. Notice in the terminal that nodemon restarts due to the changes.  Now, if you refresh your browser window, the changes are live!
 
 #### Adding a basic Leaflet layout
 1. Now, instead of that `Welcome to Express landing` page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
-1. On our `views/layout.pug`, add blocks for including the leaflet libraries.  Your `views/layout.pug` should look like this, change the name of the href to your repo, of course!
+1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the name of the href to your repo, of course!
     ```js
     doctype html
     html
@@ -205,11 +205,63 @@ So far, most of our work has been in the console, using CLI (command line interf
 1. Congratulations
 
 
-### DRAFT Step 2: Setting up the backend DB
-1. Setup new heroku node app, add postrgres DB
-1. Connect to postgres in sql client
-1. Run the db_setup.sql script to populate the schema (do this one block at a time)
-1. Import the streetcar dump file to populate with data
+### Step 2: Setting up the backend DB
+
+#### Adding Postgres to your Heroku app
+1. Go to https://dashboard.heroku.com and navigate to your app's overview page.
+1. Click on the `Resources` tab and under `Add-ons` type in `Postgres`, select `Heroku Postgres` when it appears.
+1. Select the Hobby Dev Free tier and click Provision.
+1. Click on the `Heroku Postgres` resource and it will navigate you to the datastore's config page.
+1. Under Settings, select Database Credentials.  We will need this to connect to the DB in our app, in the DB client, and in QGIS. Keep this window open.
+1. Let's assume you are using PGAdmin to connect to the database. In PGAdmin, right click on Servers > Create > Server.
+1. Add a 'Name', like 'Heroku Postgres', this just identifies the connection in your list of connections.
+1. Go to the Connection tab.
+1. Enter the information from the Heroku Database Credentials window here.  "Maintenance database" is the Heroku database name.
+1. Click the SSL tab and set "SSL Mode = Require".
+1. Click the Advanced tab, for DB Restriction, enter your Heroku database name.
+1. Hit Save, yay!  You connected!
+
+#### Adding data to Postgres
+1. Now, let's add some data. In the PGAdmin Browser, expand until you get to your database, it's the one with the goofy name. Right click and select Query Tool.
+1. Now we are going to perform several SQL operations from the file `/docs/db_setup.sql`, including creating the postgis extension, removing all the extra projections, and adding our tables. That sql file also includes scripts to create triggers to keep a history of data edits. That isn't really necessary for this tutorial, but might be nice to see how it works. For now though, the following is all you really need:
+    ```SQL
+    -- add postgis extension
+    CREATE extension postgis;
+    -- ###############################
+
+    --remove extra projections to save space
+    DELETE FROM spatial_ref_sys
+        WHERE
+            srid != 2248 AND
+            srid != 4326 AND
+            srid != 3857;
+    -- ###############################
+
+    -- create our main table
+    CREATE TABLE streetcars (
+        ID serial primary key,
+        detail text,
+        geom geometry(LINESTRING,2248),
+        editor varchar(25)
+    );
+    -- ###############################
+    ```
+1. The first block enables the PostGIS extension on our Postgres database. This enables the spatial data types and the spatial commands we are going to use later to get data.
+1. The second block removes all but a handful of projections. Since the Heroku Hobby Dev free tier counts each DB row, we need to make every one count. In this case we are just keeping 2248 (Maryland NAD83 State Plane Feet), 4326 (Geographic WGS84), 3857 (WGS84 Web Mercator).
+1. In the last block we are creating the streetcars table with a few basic columns.
+1. Execute this by hitting F5. It should work okay and then you can see the new table in the Browser.
+1. Clear out the Query window and copy in the contents from the file `docs/streetcars_export_20191021.sql`.  This contains a script-ready dump of the current streetcars table. Hit F5 to execute, hopefully it works okay.
+1. Clearing out the query window and selecting all rows `SELECT * FROM streetcars;` should show you all the new rows you imported!
+
+#### Test out the data in QGIS
+1. Finally, let's connect in QGIS to confirm everything worked.
+1. Open QGIS, expand the Browser, right click on PostGIS and select New Connection.
+1. Enter your Heroku Database credentials, Name is just a name for inside QGIS, leave Service blank, Host is Host, leave Port the same, Database is database, set SSL mode to 'require', for Authentication, select Basic and enter the Heroku DB username and password.  For our testing, I think it is okay to store the credentials locally, but this would not be secure for anything important.
+1. Test the connection, it should work okay. Then hit OK.
+1. Expand the connection until you get to your streetcars table and add it to the map.
+1. Congratulations!  You now have a remote GIS database running!
+
+In the next steps we will set up connectors to the database in Express to show the data on our Leaflet map.
 
 ### DRAFT Step 3: Connecting the Express API to the DB
 1. make a new route for `streetcars`
