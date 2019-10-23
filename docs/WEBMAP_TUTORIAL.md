@@ -155,7 +155,7 @@ So far, most of our work has been in the console, using CLI (command line interf
     - The `block append head` content means that the next section is going to be added to the `head` block from `layout`.
     - The `link` and `script` lines create the necessary `link` and `script` tags to include Leaflet in our app. These will compile as defined at [Leaflet](https://leafletjs.com/).
     - `block content` replaces whatever other block was called `block content` in `layout` with a new `div` tag with the id `map` and a new `script` tag requesting the `javascripts/map.js` file.
-1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not create it yet.
+1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not create it yet. Make sure that you open your web browser's developer tools to show the javascript console.
 1. Let's add some styles to help our layout a bit.  Add the following to `public/stylesheets/style.css`.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
     ```CSS
     /* <app-root>/public/stylesheets/style.css*/
