@@ -73,6 +73,7 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. Run `npm start` to see what this new app can do. By default the app will be running at `http://localhost:3000`
     - Check out this ExpressJS tutorial from MDN for more on [Express and Pug](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
     - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at `http://localhost:3000/users` and in `app.js`, and `routes/users.js` to see the basics of how another "route" or page is displayed.  We are going to use that format to create an `/api` route to make database requests.
+    - You may need to install additional node packages: npm install package_name
 1. Stop the app by hitting `Ctrl + C` or `Ctrl + Z` in your console and let's do some more housekeeping.
     - Remove `index.js`, it is now replaced with `app.js`.
     - In `app.js` remove all the lines that reference the `users` route (roughly Lines 8 and 23)
