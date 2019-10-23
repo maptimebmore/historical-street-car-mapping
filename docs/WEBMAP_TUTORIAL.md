@@ -1,6 +1,6 @@
 # Creating the WebApp
 Follow the steps below to create basic node application that serves up a Leaflet map and communicates with a Postgres database to show the streetcar layers we digitized.
-The tutorial is loosely based on [this tutorial from MDN](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) for getting the express app started. Then we will add some additional features for our Leaflet map and postgis routes. Each commit of the tutorial will be a specific step in the process.
+The tutorial is loosely based on [this tutorial from MDN](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) for getting the express app started. Then we will add some additional features for our Leaflet map and postgis routes.
 
 ## Tutorial Steps:
 - [Step 0: Get your environment set up](#step-0-get-your-environment-set-up)
@@ -13,12 +13,12 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 #### Online accounts and config
 1. Create a free [Heroku](https://www.heroku.com/) account.
 1. Create a new app in Heroku, from the Heroku browser dashboard.
-    - give it a fun name, this will be the name of your public webpage at `https://<app-name>.herokuapps.com`
+    - Give it a fun name, this will be the name of your public webpage at `https://<app-name>.herokuapps.com`
     - That is all for now.  We will come back to this later to add a db.
-1. Create a new github repo for a node app, if you don't have github you will need to sign up for an account too.
+1. Create a new github repo for a node app (make sure to select `Add .gitignore: Node`), if you don't have github account you will need to sign up for that too.
 
 #### Install required software
-1. [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will be using the program `Git Bash`.
+1. Have [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will use the Windows `Command Prompt` once Git is installed. 
 1. A code editor of your choice. I use [VS Code](https://code.visualstudio.com/), but anything is good.
 1. A SQL client, [PGAdmin](https://www.pgadmin.org/download/) is a good choice here.
 1. Install latest versions of [Node and npm](https://nodejs.org/en/) (they will come bundled together)
@@ -28,10 +28,12 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 
 #### Initialize the heroku app with your repo
 1. `git clone` the repo you created above to your local machine
+1. `cd` into the repo directory 
 1. Add the `heroku` remote to your repo: `heroku git:remote -a <app-name>`
-    - This will create a remote destination in your heroku app for your code to be deployed to.
+    - You will use the name of your heroku app here, not the github repo. 
+    - This will create a remote destination in your github repo for your code to be deployed to heroku.
 1. Now we will create a generic `node` `express` app:
-1. Run `npm  init` and follow the defaults.
+1. Run `npm init` and follow the defaults.
 1. Add `ExpressJS`: `npm install express --save`
 1. Create a new file `index.js` and add in this basic express `Hello World` app code:
     ```JS
@@ -71,8 +73,8 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. Run `npm start` to see what this new app can do. By default the app will be running at `http://localhost:3000`
     - Check out this ExpressJS tutorial from MDN for more on [Express and Pug](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
     - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at `http://localhost:3000/users` and in `app.js`, and `routes/users.js` to see the basics of how another "route" or page is displayed.  We are going to use that format to create an `/api` route to make database requests.
-1. Stop the app by hitting `Ctrl + C` in your console, and let's do some more housekeeping
-    - Remove `index.js`, it is replaced with `app.js`
+1. Stop the app by hitting `Ctrl + C` or `Ctrl + Z` in your console and let's do some more housekeeping.
+    - Remove `index.js`, it is now replaced with `app.js`.
     - In `app.js` remove all the lines that reference the `users` route (roughly Lines 8 and 23)
     - Remove the `users.js` file
 1. At any time you can commit your work and push it to heroku to see the changes live in your app. Follow the `git` commands above from Step 0.
@@ -80,16 +82,16 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 So far, most of our work has been in the console, using CLI (command line interface) operations to get the app up and running and to test deploying to Heroku.  In this section, we are going to dive into the HTML, CSS, and JS to get some content on the page. But first, we have one last set of configuration to make our lives easier.  We are going to install [Nodemon](https://nodemon.io/) which is a utility that will reload the node server if file changes are detected. You still need to refresh the browser page to see code changes, but at least this way you don't have to start and stop the node server.
 1. Install, configure, and run `nodemon`
     - Install nodemon `npm install -g nodemon`
-    - Add `devstart` to package.json under `scripts` with your app name
-        - `"devstart": "SET DEBUG=leaflet-express-tutorial:* & nodemon ./bin/www"`
+    - Add a `devstart` to package.json under `scripts` with your _repo name_
+        - `"devstart": "SET DEBUG=historical-street-car-mapping:* & nodemon ./bin/www"`
     - Load and test app by running `npm run devstart`
     - Navigate to `http://localhost:3000`
     - Change something in the code, for example the value for `title` in `routes/index.js`, then save. Notice in the terminal that nodemon restarts due to the changes.  Now, if you refresh your browser window, the changes are live!
 
 #### Adding a basic Leaflet layout
 1. Now, instead of that `Welcome to Express landing` page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
-1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the name of the href to your repo, of course!
-    ```js
+1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the value of the href to your repo, of course!
+    ```JS
     // <app-root>/views/layout.pug
     doctype html
     html
@@ -111,7 +113,7 @@ So far, most of our work has been in the console, using CLI (command line interf
     -  Views simply represent different HTML pages, or elements of HTML on a page. When a request is made for a page at a route, Express will locate the views associated with that route, then render the Pug view template with any additional data and send it to the browser as HTML for display in the browser. Pug provides a shorthand for us to write clean, easy to read code that will be compiled into HTML.
     - The first few lines of the `layout.pug` simply create a default HTML page.
     - The next `link` tags shows the little icon on a browser tab.  The `meta` tag helps keep the map fullscreen on different devices.
-    - The `block head` section creates a block named head where we can add content to the html page.  Now, we are only making a page title and adding a style sheet. In the next layout, we will add more content.  This keeps the layout head light in case we want to include different content in each view, which we will do.
+    - The `block head` section creates a block named head where we can add content to the html page.  Now, we are only making a page title and adding a style sheet. In the next layout, we will add more content.  This keeps the layout head light in case we want to include different content in each view, which we will do.  We are also calling for our own style.css, which is site specific style code.
     - The `body` section has a few different things going on.
         - First, we create a new global div container with the id of `main` and the class `container`. `#` means create a new div with the id of the word that follows, and pairing that with the `.container` tells Pug to also add the class `container` to the new div.
         - Next, inside that div (notice the indents) we have two more sibling divs, a header and a `block content`.  The `header` we are going to keep light, but the `block content` is where we want all our magic to go.
@@ -139,9 +141,9 @@ So far, most of our work has been in the console, using CLI (command line interf
     ```
     - In `index.pug`, `extends layout` means that this view will add to what is in the `layout.pug` view, and the content of both will be rendered.
     - The `block append head` content means that the next section is going to be added to the `head` block from `layout`.
-    - The `link` and `script` lines create the necessary `link` and `script` tags to include Leaflet in our app. These will compile as defined at [Leaflet](https://leafletjs.com/). In this case we are also calling for our own style.css, which is site specific style code.
+    - The `link` and `script` lines create the necessary `link` and `script` tags to include Leaflet in our app. These will compile as defined at [Leaflet](https://leafletjs.com/).
     - `block content` replaces whatever other block was called `block content` in `layout` with a new `div` tag with the id `map` and a new `script` tag requesting the `javascripts/map.js` file.
-1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not creat it yet.
+1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not create it yet.
 1. Let's add some styles to help our layout a bit.  Add the following to `public/stylesheets/style.css`.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
     ```CSS
     /* <app-root>/public/stylesheets/style.css*/
@@ -193,7 +195,7 @@ So far, most of our work has been in the console, using CLI (command line interf
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     ```
-1. This is standard for any new Leaflet map.  The first block creates a new instance of Leaflet.map, on the HTML element with the id `map` and then Initializes it with some basic location data for latitude, longitude, and zoom.  The next section Initializes a new tile map layer as the basemap and adds it to our map with `.addTo(map)`.  If it is bit confusing that there are three things here named `map`, you can change some of them around.  For the most part, once this is set up, you will only be using the map created by `let map =`, so it might not be an issue.
+1. This is standard for any new Leaflet map.  The first block creates a new instance of Leaflet.map, on the HTML element with the id `map` and then Initializes it with some basic location data for latitude, longitude, and zoom.  The next section initializes a new tile map layer as the basemap and adds it to our map with `.addTo(map)`.  If it is bit confusing that there are three things here named `map`, you can change some of them around.  For the most part, once this is set up, you will only be using the map created by `let map =`, so it might not be an issue.
 1. Saving and reloading your page shows a nice header and a shiny Leaflet map.  Congratulations!
 1. If you don't like the basemap, pick another one from the [Leaflet Providers Demo](https://leaflet-extras.github.io/leaflet-providers/preview/).  Note that some of these require an API key.
 1. Let's commit and push this to heroku to see our lovely map in action:
@@ -436,7 +438,7 @@ Without getting too deep into the weeds, for the next step we have to tell Javas
 1. Reload the map at the home page, boom! You should have some pretty lines. Congratulations! We're done here, let's pack it up.
 
 
-### Step 4: Styling the map and clean up
+### Step 4: Styling the map
 From here there is a lot you can do, just explore the options over at https://leafletjs.com/. To wrap up this tutorial we are going to work on styling our lines and adding some basic popups.
 
 1. Back in `map.js`, let's add some different style to the lines, we are going to add to the block inside the `$.getJSON('/api/streetcars'...`, remember, all that code runs after the geoJSON has loaded:
