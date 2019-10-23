@@ -15,7 +15,7 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. Create a new app in Heroku, from the Heroku browser dashboard.
     - give it a fun name, this will be the name of your public webpage at `https://<app-name>.herokuapps.com`
     - That is all for now.  We will come back to this later to add a db.
-1. Create a new github repo, if you don't have github you will need to sign up for an account too.
+1. Create a new github repo for a node app, if you don't have github you will need to sign up for an account too.
 
 #### Install required software
 1. [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will be using the program `Git Bash`.
@@ -90,6 +90,7 @@ So far, most of our work has been in the console, using CLI (command line interf
 1. Now, instead of that `Welcome to Express landing` page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
 1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the name of the href to your repo, of course!
     ```js
+    // <app-root>/views/layout.pug
     doctype html
     html
     head
@@ -116,7 +117,7 @@ So far, most of our work has been in the console, using CLI (command line interf
         - Next, inside that div (notice the indents) we have two more sibling divs, a header and a `block content`.  The `header` we are going to keep light, but the `block content` is where we want all our magic to go.
 1. Now, change your `views/index.pug` to include a `div` for our map and call a javascript file that will contain our leaflet code:
     ```JS
-    //views/index.pug
+    // <app-root>/views/index.pug
     extends layout
 
     block append head
@@ -143,7 +144,7 @@ So far, most of our work has been in the console, using CLI (command line interf
 1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not creat it yet.
 1. Let's add some styles to help our layout a bit.  Add the following to `public/stylesheets/style.css`.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
     ```CSS
-    /*public/stylesheets/style.css*/
+    /* <app-root>/public/stylesheets/style.css*/
     body {
         padding: 50px;
         font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -176,7 +177,7 @@ So far, most of our work has been in the console, using CLI (command line interf
     ```
 1. Finally, lets work on that Leaflet javascript. Create the file, `public/javascripts/map.js` and add the following:
     ```JS
-    //public/javascripts/map.js
+    // <app-root>/public/javascripts/map.js
 
     // start leaflet map
     let map = L.map('map', {
@@ -263,13 +264,226 @@ So far, most of our work has been in the console, using CLI (command line interf
 
 In the next steps we will set up connectors to the database in Express to show the data on our Leaflet map.
 
-### DRAFT Step 3: Connecting the Express API to the DB
-1. make a new route for `streetcars`
-1. create your `.env` file
-1. connect to your Heroku DB with `DATABASE_URL`
-1. add a map (http://duspviz.mit.edu/web-map-workshop/leaflet_nodejs_postgis/)
-1. connect map to API and draw features!
+### Step 3: Connecting the Express API to the DB
+Almost done. In this step we are going to add a new route to our express app to query the postgres database and then send data to the map. When we do this we are creating a buffer between the Leaflet map in the user's browser and the database. The buffer is our node/express server that accepts requests from the webmap, makes its own secure request to the database, then returns the response safely back to the browser. This way, the browser never knows that the database exists and the secrets that we use to connect to the database are secure. The new route will be at `/api/streetcars` and later we will tell leaflet to fetch data from that URL and then render it on the map.
 
-### DRAFT Step 4: Styling the map
-1. line symbols
-1. popups
+#### Get the basic route setup
+1. Let's start by registering the new route in our `app.js` file. First we include the handler for our new route just like the indexRouter, then we define what to do when the URL is visited:
+    ```JS
+    // <app-root>/app.js
+    //...
+    // start here, this should be around Line 7
+    var indexRouter = require('./routes/index');
+    // add this streetcarsRouter line in right after the indexRouter line.
+    var streetcarsRouter = require('./routes/api/streetcars');
+
+    //... more stuff about view engine setup and other lines that are "express middleware"
+
+    app.use('/', indexRouter);
+    // then down here, around Line 22-23, add in this line after the app.use('/'...
+    app.use('/api/streetcars', streetcarsRouter);
+    //...
+    ```
+1. The first line we add creates the variable for our route controller, this is where Express is going to send any requests to the new route. The second line we create tells Express which URLs are valid for our app. They are processed in order. First, anything to `/` or the main app URL is going to go to our index route and view.  Then, requests made to `/api/streetcars` will be forwarded to the steetcars Router. After that, nothing else is handled and a 404 will be returned.
+1. So right now your app is probably crashing, it is going to throw an error that the module `./routes/api/streetcars` cannot be found. So let's make it.
+1. Under `routes`, make a new folder `api`.  Inside the `api` folder, make a new file `streetcars.js`
+1. Add the following to the `streetcars.js` file:
+    ```JS
+    var express = require('express');
+    var router = express.Router();
+
+    /* GET streetcar data */
+    router.get('/', function(req, res) {
+        res.status(200).json({ message: "I'm the streetcars route! 🚃 🚃 🚃 " });
+    });
+
+    module.exports = router;
+    ```
+1. The first 2 lines gather our express functions. The main function called is the `router.get` this tells express that if it receives an HTTP GET request to `/api/steetcars`, keep processing it. No other HTTP request types to that URL will be processed and 404 will be returned.
+1. For now, we just have the route return a status code of 200 and a short JSON message. Test it out to make sure everything works.
+
+#### Configure the route to communicate with postgres db
+Now we will configure the app to communicate with the database, make a SQL request, then return the results.
+1. Stop the server, `Ctrl+C` or `Ctrl+Z` in whatever terminal you are using.
+1. Install two npm libraries, `dotenv` and `pg`: `npm install --save dotenv pg`.
+    - `dotenv` is a library that allows us to read from local environment `.env` files to read app secrets.
+    - `pg` installs the [node-postgres](https://node-postgres.com/features/pooling) library with tools for communicating with a postgres DB.
+1. Create a new file in your app root called `.env`. Windows might hide this, but VS code will show it.
+    - NOTE: if you created your github repo as a node app, there should be a `.gitignore` file which is set by default to ignore `.env` files, thereby not committing them to Github.  That is a good thing, you don't want to publish your DB secrets to the world!
+    - When you create the `.env` file you should notice that git does not see it is there when you enter `git status` from the command line.
+1. In your `.env`, add in the value of your `DATABASE_URL` from the Heroku database credentials page (the value URI)
+    ```SH
+    DATABASE_URL=postgres://.......
+    ```
+1. Back in `streetcars.js`, add in this connection information, it should look like this:
+    ```JS
+    // <app-root>/routes/api/streetcars.js
+    var express = require('express');
+    var router = express.Router();
+
+    /* PostgreSQL and PostGIS module and connection setup */
+    require('dotenv').config();
+    var database_url = process.env.DATABASE_URL;
+    const Pool = require('pg').Pool;
+    const pool = new Pool({
+        connectionString: database_url,
+        ssl: true
+    });
+
+    /* GET streetcar data */
+    router.get('/', function(req, res) {
+        res.status(200).json({ message: "I'm the streetcars route! 🚃 🚃 🚃 " });
+    });
+
+    module.exports = router;
+    ```
+1. We only added a few lines, but a lot is going on:
+    - `require('dotenv').config();` loads what is in the `.env` file as environment variables.
+    - `var database_url = process.env.DATABASE_URL;` grabs the DATABASE_URL variable from our `.env` file.
+    - The next few lines with `Pool` create a connection to the Postgres database using a "pool" of connections that improves performance when communicating with the database. For more on what the `pg` library is doing, check out the docs here: [node-postgres](https://node-postgres.com/features/pooling)
+1. We haven't made any requests to the db yet, so lets do that! Keep editing `streetcars.js` and add the database query inside the `.get`, the file should look like this:
+    ```JS
+    // <app-root>/routes/api/streetcars.js
+    var express = require('express');
+    var router = express.Router();
+
+    /* PostgreSQL and PostGIS module and connection setup */
+    require('dotenv').config();
+    var database_url = process.env.DATABASE_URL;
+    const Pool = require('pg').Pool;
+    const pool = new Pool({
+        connectionString: database_url,
+        ssl: true
+    });
+
+    /* GET streetcar data */
+    router.get('/', function(req, res) {
+        var featureClass = 'streetcars';
+        var query = `
+            SELECT jsonb_build_object(
+                'type',     'FeatureCollection',
+                'features', jsonb_agg(features.feature)
+            ) as dataset
+            FROM (
+            SELECT jsonb_build_object(
+                'type',       'Feature',
+                'id',         id,
+                'geometry',   ST_AsGeoJSON(ST_Transform(geom, 4326))::jsonb,
+                'properties', to_jsonb(inputs) - 'geom'
+            ) AS feature
+            FROM (SELECT * FROM public.${featureClass}) inputs) features
+        `;
+        pool.query(query, (err, results) => {
+            if (err) {
+                let status = 500;
+                res.locals.message = "Something went wrong"
+                res.locals.error = err;
+                res.locals.error.status = status;
+                return res.status(status).json({"message": "There was a problem communicating with the server"});
+            }
+            res.status(200).json(results.rows[0]['dataset'])
+        });
+    });
+
+    module.exports = router;
+    ```
+1. Save and reload the `/api/streetcars` route.  If all goes well, you should get a big dump of GeoJSON from the database.  Woohoo! If not, you probably got an error. Try inserting a `console.log(err)` right above `let status = 500`.  This will print the full error message to your terminal window. There might be a typo.
+1. So what is happening here?
+    - In the `var query = ` block we are creating one big SQL string that is going to be passed to the database. A template string is used to show how the only thing unique about this query for our database is the featureClass name, everything else would be more or less standard if you wanted to reuse this for another PostGIS table. In fact, you can also change the value of `featureClass` and see how the query handles an error if it cannot find the table.
+    - The query string is passed into the `pool.query`, this sends the query to the database just as if you had run it inside a SQL client.
+    - If the query comes back with an error `err` we catch that and send back some error messages.
+    - Otherwise, we grab the piece of data from the results called `dataset` and send it back out to express to send it back to whichever app made the request to `/api/streetcars`.
+1. Congratulations! You made an API that talks to your database and returns GeoJSON. Now let's do something with that.
+
+#### Connect the route to the map and draw the streetcar lines
+Without getting too deep into the weeds, for the next step we have to tell Javascript to do something that is going to take some time, then only when that thing is done, do something with the result. We don't want Javascript to try to run the code on the result until the result has arrived. In our case we need to make a request to our API for the GeoJSON, then when that data comes back, we need to style it and add it to the map.  There are many ways this can be done, we are going to use JQuery because it is easy and we can move on with making a map. This Leaflet tutorial from [MaptimeBoston](https://maptimeboston.github.io/leaflet-intro/) has some references for that as well.
+
+1. Include JQuery in the `index.pug` view after the Leaflet script tag, your file will look like this:
+    ```JS
+    // <app-root>/views/index.pug
+    extends layout
+
+    block append head
+    link(
+        rel='stylesheet',
+        href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css",
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""
+    )
+    script(
+        src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js",
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""
+    )
+    script(
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"
+    )
+
+    block content
+        #map
+        script(src="/javascripts/map.js")
+    ```
+1. Add the following at the bottom of `map.js` to use the JQuery `$.geoJSON` function to request data from our `/api/streetcars` route, then pass that into Leaflet and add it to the map:
+    ```JS
+    // <app-root>/public/javascripts/map.js
+    // fetch the data from our API and render it on the map:
+    $.getJSON('/api/streetcars', function(data) {
+        L.geoJson(data).addTo(map);
+    });
+    ```
+1. Reload the map at the home page, boom! You should have some pretty lines. Congratulations! We're done here, let's pack it up.
+
+
+### Step 4: Styling the map and clean up
+From here there is a lot you can do, just explore the options over at https://leafletjs.com/. To wrap up this tutorial we are going to work on styling our lines and adding some basic popups.
+
+1. Back in `map.js`, let's add some different style to the lines, we are going to add to the block inside the `$.getJSON('/api/streetcars'...`, remember, all that code runs after the geoJSON has loaded:
+    ```JS
+    // <app-root>/public/javascripts/map.js
+    $.getJSON('/api/streetcars', function(data) {
+        var geojson = L.geoJson(data, {
+            style: {
+                color: "#354ae9",
+                opacity: 0.4,
+                weight: 3
+            }
+        });
+        geojson.addTo(map);
+    });
+    ```
+1. Every line will get a blue color and some opacity. You can also set attribute specific styles by passing a function to `style`, as described here: https://leafletjs.com/examples/geojson/. We also set the result of `L.geoJson` to its own variable so we can do more with that layer later.
+1. Finally, let's add some popups to our features. Again, we are going to keep this simple, add this right after the `geojson.addTo(map);` line:
+    ```JS
+    // <app-root>/public/javascripts/map.js
+    geojson.bindPopup(function(event){
+        var props = event.feature.properties;
+        var label = `
+            <b>Detail:</b> ${props.detail}
+            </br>
+            <b>Line ID:</b> ${props.id}
+            `;
+        return label;
+    });
+    ```
+1. Here, bindPopup is taking a new function that will be run on every `event` where you click on a line. The function picks apart the attributes (the properties) on the geojson feature and then returns some simple HTML.  Since it is just HTML, you could add a lot of detail and complexity to the popup, depending on your data.
+1. Okay, that is really it.  Time to deploy to Heroku to see it all in action.
+    ```SH
+    git add .
+    git commit -am "STEP 4: I've come so far!"
+    git push heroku master
+    git push
+    ```
+
+### Some additional resources for your reading pleasure.
+- [MDN Express-NodeJS Skeleton website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
+    - This is a great complete tutorial for server-side web-dev with NodeJS and Express.
+- [Leaflet with PostGIS, NodeJS, and Express - with Duspviz](http://duspviz.mit.edu/web-map-workshop/leaflet_nodejs_postgis/)
+    - Another good tutorial that I based our app off of.
+- [A Leaflet Tutorial from MaptimeBoston](https://maptimeboston.github.io/leaflet-intro/)
+- [Full Stack Vue.js, Express & MongoDB [1] - Express API - Traversy Media
+](https://www.youtube.com/watch?v=j55fHUJqtyw)
+    - This guy does a great job of breaking down details, this is for a Vue.JS app with a MongoDB, but a lot of same priniples apply.
+- [Leaflet with a GeoJSON layer from bl.ocks.org](http://bl.ocks.org/hpfast/5017e08b6c27b5abd287c2cf21c0c533)
+    - This is a different way to fetch the GeoJSON using the more current async/await functionality of modern JS.  This approach also creates several nice functions and patterns that can be reused for getting lots of data and rendering it differently.
