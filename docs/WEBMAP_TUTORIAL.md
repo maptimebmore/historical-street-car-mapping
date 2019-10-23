@@ -475,6 +475,9 @@ From here there is a lot you can do, just explore the options over at https://le
     git push heroku master
     git push
     ```
+1. Use `heroku open` to load your map.
+1. One thing you might have noticed, if we didn't commit our `.env` file, then how does Heroku know how to connect to the database?  The variable `DATABASE_URL` is also set by Heroku for the primary DB we attached to our app, so by telling `/api/streetcars.js` to use `process.env.DATABASE_URL` it is able to grab the correct value from within the Heroku environment. Magic 🧙‍, https://devcenter.heroku.com/articles/heroku-postgresql#designating-a-primary-database.
+1. Congratulations on getting through the whole thing.  I hope you learned a few things along the way.
 
 ### Some additional resources for your reading pleasure.
 - [MDN Express-NodeJS Skeleton website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
