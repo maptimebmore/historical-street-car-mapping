@@ -60,6 +60,17 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
     git push
     ```
 1. Use `heroku open` to load up your app!
+   Note that you may need to edit your package.json for this to work, you may need to edit your "scripts" to include a start referencing your index.js, and add an "engines" section with your your node and npm version:
+  ```SH
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "x.x.x",
+    "npm": "x.x.x"
+  }
+  ```
 1. That's all for `Step 0`. In `Step 1` we will set up the barebones [ExpressJS](https://expressjs.com/) application with routes.
 
 ### Step 1: Setting up the basic express app
