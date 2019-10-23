@@ -76,7 +76,7 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 1. Stop the app by hitting `Ctrl + C` or `Ctrl + Z` in your console and let's do some more housekeeping.
     - Remove `index.js`, it is now replaced with `app.js`.
     - In `app.js` remove all the lines that reference the `users` route (roughly Lines 8 and 23)
-    - Remove the `users.js` file
+    - Remove the `users.js` file from the `routes` folder.
 1. At any time you can commit your work and push it to heroku to see the changes live in your app. Follow the `git` commands above from Step 0.
 
 So far, most of our work has been in the console, using CLI (command line interface) operations to get the app up and running and to test deploying to Heroku.  In this section, we are going to dive into the HTML, CSS, and JS to get some content on the page. But first, we have one last set of configuration to make our lives easier.  We are going to install [Nodemon](https://nodemon.io/) which is a utility that will reload the node server if file changes are detected. You still need to refresh the browser page to see code changes, but at least this way you don't have to start and stop the node server.
