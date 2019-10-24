@@ -346,7 +346,7 @@ Now we will configure the app to communicate with the database, make a SQL reque
     - NOTE: if you created your github repo as a node app (see below if you did not), there should be a `.gitignore` file which is set by default to ignore `.env` files, thereby not committing them to Github.  That is a good thing, you don't want to publish your DB secrets to the world!
     - When you create the `.env` file you should notice that git does not see it is there when you enter `git status` from the command line.
     - NOTE: if you did not create your github repo as a node app, there will not be a  `.gitignore` file. Do the following:
-        -- Copy the .gitignore file from another node repo and save it in the root of your app.
+        -- Copy the .gitignore file from [this node repo](https://github.com/maptimebmore/historical-street-car-mapping/blob/master/.gitignore) and save it in the root of your app.
         -- Move the node_modules and `.env` file out of your app folder to somewhere else
         -- run the add, commit & push commands without the files you want ignored
         -- move the files back into the folder and run the add, commit & push commands again.
