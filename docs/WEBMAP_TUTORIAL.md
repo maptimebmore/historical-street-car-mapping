@@ -13,29 +13,29 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
 #### Online accounts and config
 1. Create a free [Heroku](https://www.heroku.com/) account.
 1. Create a new app in Heroku, from the Heroku browser dashboard.
-    - Give it a fun name, this will be the name of your public webpage at `https://<app-name>.herokuapps.com`
+    - Give it a fun name, this will be the name of your public webpage at **https://[app-name].herokuapps.com**
     - That is all for now.  We will come back to this later to add a db.
-1. Create a new github repo for a node app (make sure to select `Add .gitignore: Node`), if you don't have github account you will need to sign up for that too.
+1. Create a new github repo for a node app (make sure to select **Add .gitignore: Node**), if you don't have github account you will need to sign up for that too.
 
 #### Install required software
-1. Have [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will use the Windows `Command Prompt` once Git is installed. 
+1. Have [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your computer. If you are on a Windows PC, we will use the Windows Command Prompt once Git is installed. 
 1. A code editor of your choice. I use [VS Code](https://code.visualstudio.com/), but anything is good.
 1. A SQL client, [PGAdmin](https://www.pgadmin.org/download/) is a good choice here.
 1. Install latest versions of [Node and npm](https://nodejs.org/en/) (they will come bundled together)
-1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true#set-up) and `heroku login` at your command prompt following the instructions.
-    - NOTE: I had some issues with doing this in `git bash`, others have recommended using the Windows command prompt to perform `heroku login`, that worked for me too.
-    - NOTE: Stop at the section `Prepare the app`, that is where we will insert our own app.
+1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true#set-up) and run `heroku login` at your command prompt following the instructions.
+    - NOTE: `heroku` commands seem to have some issues in Windows with the Git Bash program, using Windows Command Prompt seems to be a good atlternative, so let's just stick with that.
+    - NOTE: Stop at the section **Prepare the app**, that is where we will insert our own app.
 
 #### Initialize the heroku app with your repo
-1. `git clone` the repo you created above to your local machine
+1. At the command prompt, run `git clone <url for your git repo>` to clone the repo you created above to your local machine
 1. `cd` into the repo directory 
-1. Add the `heroku` remote to your repo: `heroku git:remote -a <app-name>`
+1. Add the **heroku** remote to your repo: `heroku git:remote -a <app-name>`
     - You will use the name of your heroku app here, not the github repo. 
     - This will create a remote destination in your github repo for your code to be deployed to heroku.
-1. Now we will create a generic `node` `express` app:
-1. Run `npm init` and follow the defaults.
-1. Add `ExpressJS`: `npm install express --save`
-1. Create a new file `index.js` and add in this basic express `Hello World` app code:
+1. Now we will create a generic Node-ExpressJS app:
+1. Run `npm init` from within your repo folder, this will prompt you with some questions to answer. Add information if you want, or simply hit the Enter key to continue on with all the defaults.
+1. Add ExpressJS to your app: `npm install express --save`
+1. Create a new file `index.js` in your app root and add in this basic express "Hello World" app code:
     ```JS
     // <app-root>/index.js
     let express = require('express');
@@ -48,60 +48,76 @@ The tutorial is loosely based on [this tutorial from MDN](https://developer.mozi
     if (port == null || port == "") { port = 8000; }
     app.listen(port, function () {
         console.log(`Example app listening on port ${port}!`);
+        console.log(`Check it out at http://localhost:${port}`);
     });
     ```
-
-1. Tell heroku we are using nodejs: `heroku buildpacks:set heroku/nodejs`
-1. Deploy your app:
+1. To learn more about what this is doing, check out the docs at [ExpressJS](https://expressjs.com/en/starter/hello-world.html)
+1. When you ran the command "npm init", it created a file called `package.json`. This file contains instructions for how node is supposed to work with your code. Open it now and add in a line in the `"scripts"` block to tell node how to start your app using the `index.js` file we just created. Add the code `"start": "node index.js",` right above the `"test"` line inside the `"scripts"` block in your package.json file:
+    ```js
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+    ```
+1. Next we are going to add the required Node and NPM versions to `package.json` so that node knows which versions your code works with. For more about this, check out this [link](https://www.marcusoft.net/2015/03/packagejson-and-engines-and-enginestrict.html).  First, run `node -v` and `npm -v` from the command line, and copy the contents into your package.json file in a new block called `"engines"`, it should look something like this:
+    ```JS
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "engines": {
+        "node": "~12.9.1",
+        "npm": "~6.10.2"
+    }
+    ```
+1. Now, test running your app locally by running `npm start`, and then opening your browser at the `"localhost"` URL specified in your terminal, probably http://localhost:8000. If everything works, you should see your "Hello World" message. 
+1. Now let's push this up to Heroku. Tell heroku we are using nodejs by running: `heroku buildpacks:set heroku/nodejs`
+1. Then, deploy your app to heroku by running these commands one at at time:
     ```SH
     git add .
     git commit -am "getting started"
     git push heroku master
-    git push
     ```
-1. Use `heroku open` to load up your app!
-   Note that you may need to edit your package.json for this to work, you may need to edit your "scripts" to include a start referencing your index.js, and add an "engines" section with your your node and npm version:
-  ```SH
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "engines": {
-    "node": "x.x.x",
-    "npm": "x.x.x"
-  }
-  ```
-1. That's all for `Step 0`. In `Step 1` we will set up the barebones [ExpressJS](https://expressjs.com/) application with routes.
+1. Run `heroku open` to load up your app in a browser.
+1. Finally, let's also push all your work up to your github page by running `git push`.
+1. That's all for **Step 0**. In **Step 1** we will set up the barebones [ExpressJS](https://expressjs.com/) application with routes.
 
 ### Step 1: Setting up the basic express app
 
 #### Getting the Express Generator boilerplate up and running
-1. Install [Express Generator](https://expressjs.com/en/starter/generator.html) `npm install -g express-generator`, we will use this to generate the skeleton app.
-1. Build the Express skeleton app using the `pug` view engine. From your repo's root directory, run `express --view=pug`, and follow instructions to install Express.
+1. Install [Express Generator](https://expressjs.com/en/starter/generator.html) `npm install -g express-generator`, we will use this to generate the skeleton app, on a mac, you probably need to run this with the `sudo` command since it is a global install: `sudo npm install -g express-generator`.
+1. Build the Express skeleton app using the [Pug](https://pugjs.org/api/getting-started.html) view engine. From your repo's root directory, run `express --view=pug`, and follow instructions to install Express.
     - This creates a new express boilerplate application using the [Pug Template Engine](https://pugjs.org/api/getting-started.html)
     - You will get a warning that there are already files present, that is okay, enter `Y` to continue
     - When you are done notice that this added several folders (`bin`, `public`, `routes`, `views`) and the new entry point `app.js`
-1. Run `npm start` to see what this new app can do. By default the app will be running at `http://localhost:3000`
+1. Some users were having the issue that required modules were not being installed here with the `express` command, please also run `npm install` to make sure all dependencies are properly installed. 
+1. Run `npm start` to see what this new app can do. By default the app will be running at http://localhost:3000
     - Check out this ExpressJS tutorial from MDN for more on [Express and Pug](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website)
-    - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at `http://localhost:3000/users` and in `app.js`, and `routes/users.js` to see the basics of how another "route" or page is displayed.  We are going to use that format to create an `/api` route to make database requests.
-    - You may need to install additional node packages: npm install package_name
+    - The `express-generator` adds a `/users` route to our app by default, take a look at that briefly in the browser at http://localhost:3000/users and in `app.js`, and `routes/users.js` to see the basics of how another `route` or page is displayed.  We are going to use that format to create an `/api` route to make database requests.
 1. Stop the app by hitting `Ctrl + C` or `Ctrl + Z` in your console and let's do some more housekeeping.
-    - Remove `index.js`, it is now replaced with `app.js`.
+    - Remove the `index.js` in your app root, it is now replaced with `app.js` - **do not delete routes/index.js**, we need that for later.
     - In `app.js` remove all the lines that reference the `users` route (roughly Lines 8 and 23)
     - Remove the `users.js` file from the `routes` folder.
-1. At any time you can commit your work and push it to heroku to see the changes live in your app. Follow the `git` commands above from Step 0.
+1. At any time you can commit your work and push it to heroku to see the changes live in your app. Follow the `git` commands above from **Step 0**.
 
 So far, most of our work has been in the console, using CLI (command line interface) operations to get the app up and running and to test deploying to Heroku.  In this section, we are going to dive into the HTML, CSS, and JS to get some content on the page. But first, we have one last set of configuration to make our lives easier.  We are going to install [Nodemon](https://nodemon.io/) which is a utility that will reload the node server if file changes are detected. You still need to refresh the browser page to see code changes, but at least this way you don't have to start and stop the node server.
-1. Install, configure, and run `nodemon`
-    - Install nodemon `npm install -g nodemon`
-    - Add a `devstart` to package.json under `scripts` with your _repo name_
-        - `"devstart": "SET DEBUG=historical-street-car-mapping:* & nodemon ./bin/www"`
+1. Install, configure, and run nodemon
+    - Install nodemon by running `npm install -g nodemon`, might need to use `sudo` on a mac.
+    - Add a `"devstart"` to package.json under `"scripts"` with your _repo name_
+        - `"devstart": "SET DEBUG=<repo_name>:* & nodemon ./bin/www"`
+        - The `"scripts"` section of your `package.json` should look like this:
+        ```JS
+        "scripts": {
+            "start": "node ./bin/www",
+            "devstart": "SET DEBUG=<repo-name>:* & nodemon ./bin/www"
+        },
+        ```
     - Load and test app by running `npm run devstart`
     - Navigate to `http://localhost:3000`
-    - Change something in the code, for example the value for `title` in `routes/index.js`, then save. Notice in the terminal that nodemon restarts due to the changes.  Now, if you refresh your browser window, the changes are live!
+    - Change something in the code, for example the value for `"title"` in `routes/index.js`, then save. Notice in the terminal that nodemon restarts due to the changes.  Now, if you refresh your browser window, the changes are live!
 
 #### Adding a basic Leaflet layout
-1. Now, instead of that `Welcome to Express landing` page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
+1. Now, instead of that **Welcome to Express landing** page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
 1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the value of the href to your repo, of course!
     ```JS
     // <app-root>/views/layout.pug
@@ -151,12 +167,13 @@ So far, most of our work has been in the console, using CLI (command line interf
         #map
         script(src="/javascripts/map.js")
     ```
-    - In `index.pug`, `extends layout` means that this view will add to what is in the `layout.pug` view, and the content of both will be rendered.
+    - In "index.pug", `extends layout` means that this view will add to what is in the "layout.pug" view, and the content of both will be rendered.
     - The `block append head` content means that the next section is going to be added to the `head` block from `layout`.
     - The `link` and `script` lines create the necessary `link` and `script` tags to include Leaflet in our app. These will compile as defined at [Leaflet](https://leafletjs.com/).
     - `block content` replaces whatever other block was called `block content` in `layout` with a new `div` tag with the id `map` and a new `script` tag requesting the `javascripts/map.js` file.
 1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not create it yet. Make sure that you open your web browser's developer tools to show the javascript console.
 1. Let's add some styles to help our layout a bit.  Add the following to `public/stylesheets/style.css`.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
+
     ```CSS
     /* <app-root>/public/stylesheets/style.css*/
     body {
@@ -189,7 +206,7 @@ So far, most of our work has been in the console, using CLI (command line interf
         margin: 0
     }
     ```
-1. Finally, lets work on that Leaflet javascript. Create the file, `public/javascripts/map.js` and add the following:
+1. Finally, lets work on that Leaflet javascript. Create the file, "public/javascripts/map.js" and add the following:
     ```JS
     // <app-root>/public/javascripts/map.js
 
