@@ -119,8 +119,9 @@ So far, most of our work has been in the console, using CLI (command line interf
 #### Adding a basic Leaflet layout
 1. Now, instead of that **Welcome to Express landing** page, lets add our Leaflet map. In `routes/index.js` change the of title to something you like.
 1. On our `views/layout.pug`, add a few basic elements that we are going to build upon with other layouts.  Your `views/layout.pug` should look like this, change the value of the href to your repo, of course!
+    
+    `<app-root>/views/layout.pug`
     ```JS
-    // <app-root>/views/layout.pug
     doctype html
     html
     head
@@ -146,8 +147,9 @@ So far, most of our work has been in the console, using CLI (command line interf
         - First, we create a new global div container with the id of `main` and the class `container`. `#` means create a new div with the id of the word that follows, and pairing that with the `.container` tells Pug to also add the class `container` to the new div.
         - Next, inside that div (notice the indents) we have two more sibling divs, a header and a `block content`.  The `header` we are going to keep light, but the `block content` is where we want all our magic to go.
 1. Now, change your `views/index.pug` to include a `div` for our map and call a javascript file that will contain our leaflet code:
+
+    `<app-root>/views/index.pug`
     ```JS
-    // <app-root>/views/index.pug
     extends layout
 
     block append head
@@ -167,13 +169,31 @@ So far, most of our work has been in the console, using CLI (command line interf
         #map
         script(src="/javascripts/map.js")
     ```
-    - In "index.pug", `extends layout` means that this view will add to what is in the "layout.pug" view, and the content of both will be rendered.
+    - In `index.pug`, `extends layout` means that this view will add to what is in the `layout.pug` view, and the content of both will be rendered.
     - The `block append head` content means that the next section is going to be added to the `head` block from `layout`.
     - The `link` and `script` lines create the necessary `link` and `script` tags to include Leaflet in our app. These will compile as defined at [Leaflet](https://leafletjs.com/).
     - `block content` replaces whatever other block was called `block content` in `layout` with a new `div` tag with the id `map` and a new `script` tag requesting the `javascripts/map.js` file.
 1. Reloading the page now should show our header, but there is a console error that `map.js` cannot be found, which makes sense as we did not create it yet. Make sure that you open your web browser's developer tools to show the javascript console.
-1. Let's add some styles to help our layout a bit.  Add the following to `public/stylesheets/style.css`.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
+1. Let's work on that Leaflet javascript. Create the file, `public/javascripts/map.js` and add the following:
+    ```JS
+    // <app-root>/public/javascripts/map.js
 
+    // start leaflet map
+    let map = L.map('map', {
+        center: [39.29564, -76.60689], //coordinates for Baltimore
+        zoom: 13,
+        minZoom: 4,
+        maxZoom: 19
+    });
+
+    // add basemap
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    ```
+1. This is standard for any new Leaflet map.  The first block creates a new instance of Leaflet.map, on the HTML element with the id `map` and then Initializes it with some basic location data for latitude, longitude, and zoom.  The next section initializes a new tile map layer as the basemap and adds it to our map with `.addTo(map)`.  If it is bit confusing that there are three things here named `map`, you can change some of them around.  For the most part, once this is set up, you will only be using the map created by `let map =`, so it might not be an issue.
+1. Finally, let's add some styles to help our layout a bit.  Replace all of `public/stylesheets/style.css` with the following styles.  This uses CSS Grid to align our header and our map together, and makes the map fill the page after the header.
     ```CSS
     /* <app-root>/public/stylesheets/style.css*/
     body {
@@ -206,25 +226,6 @@ So far, most of our work has been in the console, using CLI (command line interf
         margin: 0
     }
     ```
-1. Finally, lets work on that Leaflet javascript. Create the file, "public/javascripts/map.js" and add the following:
-    ```JS
-    // <app-root>/public/javascripts/map.js
-
-    // start leaflet map
-    let map = L.map('map', {
-        center: [39.29564, -76.60689], //coordinates for Baltimore
-        zoom: 13,
-        minZoom: 4,
-        maxZoom: 19
-    });
-
-    // add basemap
-    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    ```
-1. This is standard for any new Leaflet map.  The first block creates a new instance of Leaflet.map, on the HTML element with the id `map` and then Initializes it with some basic location data for latitude, longitude, and zoom.  The next section initializes a new tile map layer as the basemap and adds it to our map with `.addTo(map)`.  If it is bit confusing that there are three things here named `map`, you can change some of them around.  For the most part, once this is set up, you will only be using the map created by `let map =`, so it might not be an issue.
 1. Saving and reloading your page shows a nice header and a shiny Leaflet map.  Congratulations!
 1. If you don't like the basemap, pick another one from the [Leaflet Providers Demo](https://leaflet-extras.github.io/leaflet-providers/preview/).  Note that some of these require an API key.
 1. Let's commit and push this to heroku to see our lovely map in action:
@@ -232,9 +233,9 @@ So far, most of our work has been in the console, using CLI (command line interf
     git add .
     git commit -am "I made a map"
     git push heroku master
-    git push
     ```
-1. Congratulations
+1. And finally use `git push` to push the code up to your github repo as well.
+1. Congratulations!
 
 
 ### Step 2: Setting up the backend DB
@@ -244,18 +245,19 @@ So far, most of our work has been in the console, using CLI (command line interf
 1. Click on the `Resources` tab and under `Add-ons` type in `Postgres`, select `Heroku Postgres` when it appears.
 1. Select the Hobby Dev Free tier and click Provision.
 1. Click on the `Heroku Postgres` resource and it will navigate you to the datastore's config page.
-1. Under Settings, select Database Credentials.  We will need this to connect to the DB in our app, in the DB client, and in QGIS. Keep this window open.
+1. Under Settings, select Database Credentials.  We will need these credentials to connect to the DB in our app, in the DB client, and in QGIS. Keep this window open.
 1. Let's assume you are using PGAdmin to connect to the database. In PGAdmin, right click on Servers > Create > Server.
 1. Add a 'Name', like 'Heroku Postgres', this just identifies the connection in your list of connections.
 1. Go to the Connection tab.
-1. Enter the information from the Heroku Database Credentials window here.  "Maintenance database" is the Heroku database name.
+1. Enter the information from the Heroku Database Credentials window here for fields of host, username, and password. The "Maintenance database" is the Heroku database name.
 1. Click the SSL tab and set "SSL Mode = Require".
 1. Click the Advanced tab, for DB Restriction, enter your Heroku database name.
 1. Hit Save, yay!  You connected!
+1. Something go wrong?  [Check out this blog post for another walkthrough.](https://medium.com/@vapurrmaid/getting-started-with-heroku-postgres-and-pgadmin-run-on-part-2-90d9499ed8fb)
 
 #### Adding data to Postgres
-1. Now, let's add some data. In the PGAdmin Browser, expand until you get to your database, it's the one with the goofy name. Right click and select Query Tool.
-1. Now we are going to perform several SQL operations from the file `/docs/db_setup.sql`, including creating the postgis extension, removing all the extra projections, and adding our tables. That sql file also includes scripts to create triggers to keep a history of data edits. That isn't really necessary for this tutorial, but might be nice to see how it works. For now though, the following is all you really need:
+1. Now, let's add some data. In the PGAdmin Browser, expand until you get to your database, it's the one with the goofy name. Right click and select Query Tool to open a SQL query window. 
+1. Now we are going to perform several SQL operations from the file [/data/db_setup.sql](/data/db_setup.sql), including creating the postgis extension, removing all the extra projections, and adding our tables. That sql file also includes scripts to create triggers to keep a history of data edits. That isn't really necessary for this tutorial, but might be nice to see how it works. For now though, the following is all you really need:
     ```SQL
     -- add postgis extension
     CREATE extension postgis;
@@ -281,8 +283,8 @@ So far, most of our work has been in the console, using CLI (command line interf
 1. The first block enables the PostGIS extension on our Postgres database. This enables the spatial data types and the spatial commands we are going to use later to get data.
 1. The second block removes all but a handful of projections. Since the Heroku Hobby Dev free tier counts each DB row, we need to make every one count. In this case we are just keeping 2248 (Maryland NAD83 State Plane Feet), 4326 (Geographic WGS84), 3857 (WGS84 Web Mercator).
 1. In the last block we are creating the streetcars table with a few basic columns.
-1. Execute this by hitting F5. It should work okay and then you can see the new table in the Browser.
-1. Clear out the Query window and copy in the contents from the file `docs/streetcars_export_20191021.sql`.  This contains a script-ready dump of the current streetcars table. Hit F5 to execute, hopefully it works okay.
+1. Execute this by hitting F5. It should work okay and then you can see the new table in the Browser under your database > Schemas > public > Tables > `streetcars`
+1. Clear out the Query window and copy in the contents from the file [/data/streetcars_export_20191021.sql](/data/streetcars_export_20191021.sql).  This contains a script-ready dump of the current streetcars table. Hit F5 to execute, hopefully it works okay.
 1. Clearing out the query window and selecting all rows `SELECT * FROM streetcars;` should show you all the new rows you imported!
 
 #### Test out the data in QGIS
@@ -296,7 +298,7 @@ So far, most of our work has been in the console, using CLI (command line interf
 In the next steps we will set up connectors to the database in Express to show the data on our Leaflet map.
 
 ### Step 3: Connecting the Express API to the DB
-Almost done. In this step we are going to add a new route to our express app to query the postgres database and then send data to the map. When we do this we are creating a buffer between the Leaflet map in the user's browser and the database. The buffer is our node/express server that accepts requests from the webmap, makes its own secure request to the database, then returns the response safely back to the browser. This way, the browser never knows that the database exists and the secrets that we use to connect to the database are secure. The new route will be at `/api/streetcars` and later we will tell leaflet to fetch data from that URL and then render it on the map.
+Almost done. In this step we are going to add a new route to our express app to query the postgres database and then send data to the map. When we do this we are creating a buffer between the Leaflet map in the user's browser and the database. The buffer is our node/express server that accepts requests from the webmap, makes its own secure request to the database, then returns the response safely back to the browser. This way, the browser never knows that the database exists and the secrets that we use to connect to the database are not exposed to the public through the browser. The new route will be at `/api/streetcars` and later we will tell leaflet to fetch data from that URL and then render it on the map.
 
 #### Get the basic route setup
 1. Let's start by registering the new route in our `app.js` file. First we include the handler for our new route just like the indexRouter, then we define what to do when the URL is visited:
@@ -320,6 +322,7 @@ Almost done. In this step we are going to add a new route to our express app to 
 1. Under `routes`, make a new folder `api`.  Inside the `api` folder, make a new file `streetcars.js`
 1. Add the following to the `streetcars.js` file:
     ```JS
+    // <app-root>/routes/api/streetcars.js
     var express = require('express');
     var router = express.Router();
 
@@ -336,7 +339,7 @@ Almost done. In this step we are going to add a new route to our express app to 
 #### Configure the route to communicate with postgres db
 Now we will configure the app to communicate with the database, make a SQL request, then return the results.
 1. Stop the server, `Ctrl+C` or `Ctrl+Z` in whatever terminal you are using.
-1. Install two npm libraries, `dotenv` and `pg`: `npm install --save dotenv pg`.
+1. Install two npm libraries, **dotenv** and **pg**, run: `npm install --save dotenv pg`.
     - `dotenv` is a library that allows us to read from local environment `.env` files to read app secrets.
     - `pg` installs the [node-postgres](https://node-postgres.com/features/pooling) library with tools for communicating with a postgres DB.
 1. Create a new file in your app root called `.env`. Windows might hide this, but VS code will show it.
@@ -345,8 +348,8 @@ Now we will configure the app to communicate with the database, make a SQL reque
     - NOTE: if you did not create your github repo as a node app, there will not be a  `.gitignore` file. Do the following:
         -- Copy the .gitignore file from another node repo and save it in the root of your app.
         -- Move the node_modules and `.env` file out of your app folder to somewhere else
-        -- run the add, comit & push commands without the files you want ignored
-        -- move the files back into the folder and run the add, comit & push commands again.
+        -- run the add, commit & push commands without the files you want ignored
+        -- move the files back into the folder and run the add, commit & push commands again.
         -- Git should say "On branch master Your branch is up to date with 'origin/master'. nothing to commit, working tree clean"
 1. In your `.env`, add in the value of your `DATABASE_URL` from the Heroku database credentials page (the value URI)
     ```SH
@@ -424,16 +427,16 @@ Now we will configure the app to communicate with the database, make a SQL reque
 
     module.exports = router;
     ```
-1. Save and reload the `/api/streetcars` route.  If all goes well, you should get a big dump of GeoJSON from the database.  Woohoo! If not, you probably got an error. Try inserting a `console.log(err)` right above `let status = 500`.  This will print the full error message to your terminal window. There might be a typo.
+1. Save and reload the http://localhost:3000/api/streetcars route in the browser.  If all goes well, you should get a big dump of GeoJSON from the database.  Woohoo! If not, you probably got an error. Try inserting a `console.log(err)` right above `let status = 500`.  This will print the full error message to your terminal window. There might be a typo.
 1. So what is happening here?
     - In the `var query = ` block we are creating one big SQL string that is going to be passed to the database. A template string is used to show how the only thing unique about this query for our database is the featureClass name, everything else would be more or less standard if you wanted to reuse this for another PostGIS table. In fact, you can also change the value of `featureClass` and see how the query handles an error if it cannot find the table.
     - The query string is passed into the `pool.query`, this sends the query to the database just as if you had run it inside a SQL client.
-    - If the query comes back with an error `err` we catch that and send back some error messages.
+    - If the query comes back with an error `err`, we catch that and send back some error messages along with a 500 HTTP status. 
     - Otherwise, we grab the piece of data from the results called `dataset` and send it back out to express to send it back to whichever app made the request to `/api/streetcars`.
 1. Congratulations! You made an API that talks to your database and returns GeoJSON. Now let's do something with that.
 
 #### Connect the route to the map and draw the streetcar lines
-Without getting too deep into the weeds, for the next step we have to tell Javascript to do something that is going to take some time, then only when that thing is done, do something with the result. We don't want Javascript to try to run the code on the result until the result has arrived. In our case we need to make a request to our API for the GeoJSON, then when that data comes back, we need to style it and add it to the map.  There are many ways this can be done, we are going to use JQuery because it is easy and we can move on with making a map. This Leaflet tutorial from [MaptimeBoston](https://maptimeboston.github.io/leaflet-intro/) has some references for that as well.
+Without getting too deep into the weeds, for the next step we have to tell Javascript to do something that is going to take "some time", then only when that thing is done, do something with the result. We don't want Javascript to try to run the code on the result until the result has arrived. In our case we need to make a request to our API for the GeoJSON, then when that data comes back, we need to style it and add it to the map.  There are many ways this can be done, we are going to use JQuery because it is easy and we can move on with making a map. This Leaflet tutorial from [MaptimeBoston](https://maptimeboston.github.io/leaflet-intro/) has some references for that as well. 
 
 1. Include JQuery in the `index.pug` view after the Leaflet script tag, your file will look like this:
     ```JS
@@ -504,15 +507,15 @@ From here there is a lot you can do, just explore the options over at https://le
         return label;
     });
     ```
-1. Here, bindPopup is taking a new function that will be run on every `event` where you click on a line. The function picks apart the attributes (the properties) on the geojson feature and then returns some simple HTML.  Since it is just HTML, you could add a lot of detail and complexity to the popup, depending on your data.
+1. Here, `bindPopup` is taking a new function that will be run on every `event` where you click on a line. The function picks apart the attributes (the properties) on the geojson feature and then returns some simple HTML.  Since it is just HTML, you could add a lot of detail and complexity to the popup, depending on your data.
 1. Okay, that is really it.  Time to deploy to Heroku to see it all in action.
     ```SH
     git add .
     git commit -am "STEP 4: I've come so far!"
     git push heroku master
-    git push
     ```
 1. Use `heroku open` to load your map.
+1. And run `git push` to push it to your repo. 
 1. One thing you might have noticed, if we didn't commit our `.env` file, then how does Heroku know how to connect to the database?  The variable `DATABASE_URL` is also set by Heroku for the primary DB we attached to our app, so by telling `/api/streetcars.js` to use `process.env.DATABASE_URL` it is able to grab the correct value from within the Heroku environment. Magic 🧙‍, https://devcenter.heroku.com/articles/heroku-postgresql#designating-a-primary-database.
 1. Congratulations on getting through the whole thing.  I hope you learned a few things along the way.
 
