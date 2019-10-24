@@ -340,8 +340,14 @@ Now we will configure the app to communicate with the database, make a SQL reque
     - `dotenv` is a library that allows us to read from local environment `.env` files to read app secrets.
     - `pg` installs the [node-postgres](https://node-postgres.com/features/pooling) library with tools for communicating with a postgres DB.
 1. Create a new file in your app root called `.env`. Windows might hide this, but VS code will show it.
-    - NOTE: if you created your github repo as a node app, there should be a `.gitignore` file which is set by default to ignore `.env` files, thereby not committing them to Github.  That is a good thing, you don't want to publish your DB secrets to the world!
+    - NOTE: if you created your github repo as a node app (see below if you did not), there should be a `.gitignore` file which is set by default to ignore `.env` files, thereby not committing them to Github.  That is a good thing, you don't want to publish your DB secrets to the world!
     - When you create the `.env` file you should notice that git does not see it is there when you enter `git status` from the command line.
+    - NOTE: if you did not create your github repo as a node app, there will not be a  `.gitignore` file. Do the following:
+        -- Copy the .gitignore file from another node repo and save it in the root of your app.
+        -- Move the node_modules and `.env` file out of your app folder to somewhere else
+        -- run the add, comit & push commands without the files you want ignored
+        -- move the files back into the folder and run the add, comit & push commands again.
+        -- Git should say "On branch master Your branch is up to date with 'origin/master'. nothing to commit, working tree clean"
 1. In your `.env`, add in the value of your `DATABASE_URL` from the Heroku database credentials page (the value URI)
     ```SH
     DATABASE_URL=postgres://.......
