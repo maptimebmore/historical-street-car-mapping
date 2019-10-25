@@ -346,11 +346,11 @@ Now we will configure the app to communicate with the database, make a SQL reque
     - NOTE: if you created your github repo as a node app (see below if you did not), there should be a `.gitignore` file which is set by default to ignore `.env` files, thereby not committing them to Github.  That is a good thing, you don't want to publish your DB secrets to the world!
     - When you create the `.env` file you should notice that git does not see it is there when you enter `git status` from the command line.
     - NOTE: if you did not create your github repo as a node app, there will not be a  `.gitignore` file. Do the following:
-        -- Copy the .gitignore file from [this node repo](https://github.com/maptimebmore/historical-street-car-mapping/blob/master/.gitignore) and save it in the root of your app.
-        -- Move the node_modules and `.env` file out of your app folder to somewhere else
-        -- run the add, commit & push commands without the files you want ignored
-        -- move the files back into the folder and run the add, commit & push commands again.
-        -- Git should say "On branch master Your branch is up to date with 'origin/master'. nothing to commit, working tree clean"
+        - Copy the .gitignore file from [this node repo](https://github.com/maptimebmore/historical-street-car-mapping/blob/master/.gitignore) and save it in the root of your app.
+        - Move the node_modules and `.env` file out of your app folder to somewhere else
+        - run the add, commit & push commands without the files you want ignored
+        - move the files back into the folder and run the add, commit & push commands again.
+        - Git should say "On branch master Your branch is up to date with 'origin/master'. nothing to commit, working tree clean"
 1. In your `.env`, add in the value of your `DATABASE_URL` from the Heroku database credentials page (the value URI)
     ```SH
     DATABASE_URL=postgres://.......
@@ -444,22 +444,22 @@ Without getting too deep into the weeds, for the next step we have to tell Javas
     extends layout
 
     block append head
-    link(
-        rel='stylesheet',
-        href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css",
-        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-        crossorigin=""
-    )
-    script(
-        src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js",
-        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-        crossorigin=""
-    )
-    script(
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"
-    )
+        link(
+            rel='stylesheet',
+            href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css",
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""
+        )
+        script(
+            src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js",
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin=""
+        )
+        script(
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"
+        )
 
     block content
         #map
